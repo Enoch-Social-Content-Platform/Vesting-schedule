@@ -4,7 +4,7 @@ pragma solidity ^0.5.3;
 // import './Vesting.sol';
 import '@openzeppelin/upgrades/contracts/upgradeability/ProxyFactory.sol';
 
-contract VestingFactory is ProxyFactory {
+contract Vesting_Factory is ProxyFactory {
     // string[] allocationType = ['seed', 'strategic', 'private', 'auction'];
     address public vesting_implementation;
     address[] public vestingProxies;

@@ -10822,9 +10822,69 @@
     "name": "solc",
     "version": "0.5.16+commit.9c3226ce.Emscripten.clang"
   },
-  "networks": {},
+  "networks": {
+    "5777": {
+      "events": {
+        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event"
+        },
+        "0x39983c6d4d174a7aee564f449d4a5c3c7ac9649d72b7793c56901183996f8af6": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "token",
+              "type": "address"
+            }
+          ],
+          "name": "TokenVestingRevoked",
+          "type": "event"
+        },
+        "0xc7798891864187665ac6dd119286e44ec13f014527aeeb2b8eb3fd413df93179": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "TokensReleased",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x0e6930ab78Edfb3FaC45698C9a8fDD643E71AD5c",
+      "transactionHash": "0xb6a2caa6a0b20d383aafd7272c89c4fc4d36be7070810963bc543aea37f8d6dc"
+    }
+  },
   "schemaVersion": "3.3.4",
-  "updatedAt": "2021-06-27T07:25:25.668Z",
+  "updatedAt": "2021-06-27T16:38:11.645Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {
       "beneficiary()": {
