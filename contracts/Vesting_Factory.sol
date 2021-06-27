@@ -6,11 +6,15 @@ import '@openzeppelin/upgrades/contracts/upgradeability/ProxyFactory.sol';
 
 contract VestingFactory is ProxyFactory {
     // string[] allocationType = ['seed', 'strategic', 'private', 'auction'];
-    address public vesting_skeleton;
+    address public vesting_implementation;
     address[] public vestingProxies;
 
-    function newVesting(bytes memory _data) external returns (address) {
-        address proxy = deployMinimal(vesting_skeleton, _data);
+    constructor(address _vesting_implementation) public {
+        vesting_implementation = _vesting_implementation;
+    }
+
+    function newVesting(bytes calldata _data) external returns (address) {
+        address proxy = deployMinimal(vesting_implementation, _data);
         vestingProxies.push(proxy);
         return proxy;
     }
