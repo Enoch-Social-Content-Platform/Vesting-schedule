@@ -13,9 +13,8 @@ contract Vesting_Factory is ProxyFactory {
         vesting_implementation = _vesting_implementation;
     }
 
-    function newVesting(bytes calldata _data) external returns (address) {
-        address proxy = deployMinimal(vesting_implementation, _data);
+    function newVesting(bytes calldata _data) external returns (address proxy) {
+        proxy = deployMinimal(vesting_implementation, _data);
         vestingProxies.push(proxy);
-        return proxy;
     }
 }
