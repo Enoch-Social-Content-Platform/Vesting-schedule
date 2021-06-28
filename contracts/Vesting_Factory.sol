@@ -35,6 +35,6 @@ contract Vesting_Factory {
         if(_data.length > 0) {
             (bool success,) = proxy.call(_data);
             require(success);
-        }
+        }    
     }
 }
