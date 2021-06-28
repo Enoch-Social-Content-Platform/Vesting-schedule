@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "@openzeppelin/upgrades": "^2.8.0",
     "web3": "^1.2.2"
   }
 }

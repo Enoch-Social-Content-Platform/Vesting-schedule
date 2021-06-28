@@ -16,6 +16,8 @@ contract("Vesting", (accounts) => {
         let vestingFactoryInstance = await Vesting_Factory.deployed();
         const vesting_implementation = await vestingFactoryInstance.vesting_implementation();
         assert.equal(vestingInstance.address, vesting_implementation);
+        console.log(vestingJson.deployedBytecode.length)
+        console.log(vestingJson.bytecode.length)
     })
 
     it("should create new vesting schedule", async () => {
@@ -44,18 +46,18 @@ contract("Vesting", (accounts) => {
         }, [accounts[1], start, 3*24*60*60, start + 6*24*60*60, true]);
 
         proxy = await vestingFactoryInstance.newVesting(encodedData);
-        console.log(proxy.logs[0].address);
+        // console.log(proxy.logs[0].address);
         assert.ok(proxy, "proxy contract created for vesting");
     })
 
-    it("proxy should successfully delegate function call to implementation contract", async () => {
-        // const proxyContract = new web3.eth.Contract(vestingJson.abi, proxy.logs[0].address);
-        const proxyContract = await Vesting.at(proxy.logs[0].address);
-        console.log(proxyContract);
-        const beneficiary = await proxyContract.beneficiary.call();
-        console.log(beneficiary);
-        // const beneficiary = await proxyContract.methods.beneficiary().call();
-        // console.log(beneficiary);
-    })
+    // it("proxy should successfully delegate function call to implementation contract", async () => {
+    //     // const proxyContract = new web3.eth.Contract(vestingJson.abi, proxy.logs[0].address);
+    //     const proxyContract = await Vesting.at(proxy.logs[0].address);
+    //     // console.log(proxyContract);
+    //     const beneficiary = await proxyContract.beneficiary().call();
+    //     console.log(beneficiary);
+    //     // const beneficiary = await proxyContract.methods.beneficiary().call();
+    //     // console.log(beneficiary);
+    // })
 })
 
