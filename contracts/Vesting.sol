@@ -4,10 +4,10 @@ pragma solidity ^0.5.3;
 
 import './SafeERC20.sol';
 import './SafeMath.sol';
-import './Ownable.sol';
+// import './Ownable.sol';
 import './Initializable.sol';
 
-contract Vesting is Initializable, Ownable {
+contract Vesting is Initializable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
@@ -68,6 +68,22 @@ contract Vesting is Initializable, Ownable {
         return _revoked[token];
     }
 
+    function revoke(IERC20 token) public onlyBeneficiary {
+        require(_revocable, "TokenVesting: cannot revoke");
+        require(!_revoked[address(token)], "TokenVesting: token already revoked");
+
+        uint256 balance = token.balanceOf(address(this));
+
+        uint256 unreleased = _releasableAmount(token);
+        uint256 refund = balance.sub(unreleased);
+
+        _revoked[address(token)] = true;
+
+        token.safeTransfer(beneficiary(), refund);
+
+        emit TokenVestingRevoked(address(token));
+    }
+
     function release(IERC20 token) public {
         uint256 unreleased = _releasableAmount(token);
 
@@ -80,24 +96,12 @@ contract Vesting is Initializable, Ownable {
         emit TokensReleased(address(token), unreleased);
     }
 
-    function revoke(IERC20 token) public onlyOwner {
-        require(_revocable, "TokenVesting: cannot revoke");
-        require(!_revoked[address(token)], "TokenVesting: token already revoked");
-
-        uint256 balance = token.balanceOf(address(this));
-
-        uint256 unreleased = _releasableAmount(token);
-        uint256 refund = balance.sub(unreleased);
-
-        _revoked[address(token)] = true;
-
-        token.safeTransfer(owner(), refund);
-
-        emit TokenVestingRevoked(address(token));
-    }
-
     function _releasableAmount(IERC20 token) private view returns (uint256) {
         return _vestedAmount(token).sub(_released[address(token)]);
+    }
+
+    function msgSender() public view returns (address) {
+        return msg.sender;
     }
 
     function _vestedAmount(IERC20 token) private view returns (uint256) {
@@ -111,5 +115,14 @@ contract Vesting is Initializable, Ownable {
         } else {
             return totalBalance.mul(block.timestamp.sub(_start)).div(_duration);
         }
+    }
+
+    modifier onlyBeneficiary() {
+        require(isBeneficiary(), "you are not authorized");
+        _;
+    }
+
+    function isBeneficiary() internal view returns (bool) {
+        return msg.sender == beneficiary();
     }
 }
