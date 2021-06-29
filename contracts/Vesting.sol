@@ -4,7 +4,6 @@ pragma solidity ^0.5.3;
 
 import './SafeERC20.sol';
 import './SafeMath.sol';
-// import './Ownable.sol';
 import './Initializable.sol';
 
 contract Vesting is Initializable {

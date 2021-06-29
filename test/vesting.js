@@ -9,7 +9,9 @@ const web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:9545"));
 
 
 contract("Vesting", (accounts) => {
-    let tx;
+    let tx1;
+    let tx2;
+    let tx3;
 
     it("Vesting contract address should equal vesting_implementation address in Vesting_Factory contract", async () => {
         let vestingInstance = await Vesting.deployed();
@@ -22,7 +24,46 @@ contract("Vesting", (accounts) => {
         let vestingFactoryInstance = await Vesting_Factory.deployed();
         const start = Math.ceil(Date.now()/1000);
 
-        encodedData = web3.eth.abi.encodeFunctionCall({
+        encodedData1 = encodeInitializeData(accounts[1], start, 3*24*60*60, start + 6*24*60*60);
+        encodedData2 = encodeInitializeData(accounts[2], start, 1*24*60*60, start + 3*24*60*60);
+
+        tx1 = await vestingFactoryInstance.newVesting(encodedData1);
+        tx2 = await vestingFactoryInstance.newVesting(encodedData2);
+        console.log("transaction reciept: ", tx1);
+        console.log("transaction reciept: ", tx2);
+        assert.ok(tx1, "proxy contract created for vesting");
+    })
+
+    it("proxy should successfully delegate function call to implementation contract", async () => {
+        const proxyAddress1 = tx1.logs[0].args.proxy;
+        await proxyCall(1, proxyAddress1);
+
+        const proxyAddress2 = tx2.logs[0].args.proxy;
+        await proxyCall(2, proxyAddress2);
+    })
+
+    async function proxyCall(num, proxy_addr) {
+        const proxyContract = await Vesting.at(proxy_addr);
+        console.log("proxy address: ", proxy_addr);
+
+        const beneficiary = await proxyContract.beneficiary();
+        console.log(`${num} proxy beneficiary: `, beneficiary);
+
+        const start = await proxyContract.start();
+        console.log(`${num} proxy start: `, start.toString());
+
+        const cliff = await proxyContract.cliff();
+        console.log(`${num} proxy cliff: `, cliff.toString());
+
+        const duration = await proxyContract.duration();
+        console.log(`${num} proxy duration: `, duration.toString());
+
+        // const msgSender = await proxyContract.msgSender({from: accounts[1]});
+        // console.log(`${num} proxy msgSender: `, msgSender);
+    }
+
+    function encodeInitializeData(benf, start, cliff, duration) {
+        return Vesting.web3.eth.abi.encodeFunctionCall({
             name: 'initialize',
             type: 'function',
             inputs: [{
@@ -41,37 +82,7 @@ contract("Vesting", (accounts) => {
                 type: 'bool',
                 name: 'revocable'
             }]
-        }, [accounts[1], start, 3*24*60*60, start + 6*24*60*60, true]);
-        console.log("beneficiary input: ", accounts[1]);
-
-        tx = await vestingFactoryInstance.newVesting(encodedData);
-        console.log("transaction reciept: ", tx);
-        assert.ok(tx, "proxy contract created for vesting");
-    })
-
-    it("proxy should successfully delegate function call to implementation contract", async () => {
-        const proxyAddress = tx.logs[0].args.proxy;
-        console.log("proxy address: ", proxyAddress);
-
-        const proxyContract = await Vesting.at(proxyAddress);
-
-        const beneficiary = await proxyContract.beneficiary();
-        console.log("proxy beneficiary: ", beneficiary);
-
-        const start = await proxyContract.start();
-        console.log("proxy start: ", start.toString());
-
-        const cliff = await proxyContract.cliff();
-        console.log("proxy cliff: ", cliff.toString());
-
-        const duration = await proxyContract.duration();
-        console.log("proxy duration: ", duration.toString());
-
-        const owner = await proxyContract.owner();
-        console.log("owner: ", owner);
-
-        const msgSender = await proxyContract.msgSender({from: accounts[0]});
-        console.log("proxy msgSender: ", msgSender);
-    })
+        },[benf, start, cliff, duration, true]);
+    }
 })
 
