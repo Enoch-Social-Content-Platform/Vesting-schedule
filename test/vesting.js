@@ -1,9 +1,9 @@
 const Vesting = artifacts.require("Vesting");
 const Vesting_Factory = artifacts.require("Vesting_Factory");
 
-const Web3 = require('web3');
+// const Web3 = require('web3');
 // for local development
-const web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:9545"));
+// const web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:9545"));
 
 // const vestingJson = require('../build/contracts/Vesting.json');
 
@@ -24,7 +24,7 @@ contract("Vesting", (accounts) => {
         let vestingFactoryInstance = await Vesting_Factory.deployed();
         const start = Math.ceil(Date.now()/1000);
 
-        encodedData1 = encodeInitializeData(accounts[1], start, 3*24*60*60, start + 6*24*60*60);
+        encodedData1 = encodeInitializeData(accounts[1], start, 1*1*10*60, start + 1*1*30*60);
         encodedData2 = encodeInitializeData(accounts[2], start, 1*24*60*60, start + 3*24*60*60);
 
         tx1 = await vestingFactoryInstance.newVesting(encodedData1);
