@@ -1,4 +1,4 @@
-const Vesting = artifacts.require("Vesting");
+const Vesting = artifacts.require("Vesting2");
 const Vesting_Factory = artifacts.require("Vesting_Factory");
 
 // const Web3 = require('web3');
@@ -24,8 +24,8 @@ contract("Vesting", (accounts) => {
         let vestingFactoryInstance = await Vesting_Factory.deployed();
         const start = Math.ceil(Date.now()/1000);
 
-        encodedData1 = encodeInitializeData(accounts[1], start, 1*1*10*60, start + 1*1*30*60);
-        encodedData2 = encodeInitializeData(accounts[2], start, 1*1*20*60, start + 1*1*60*60);
+        encodedData1 = encodeInitializeData(accounts[1], start, 1*1*1*60, 1*1*3*60);
+        encodedData2 = encodeInitializeData(accounts[2], start, 1*1*2*60, 1*1*6*60);
 
         tx1 = await vestingFactoryInstance.newVesting(encodedData1);
         tx2 = await vestingFactoryInstance.newVesting(encodedData2);
@@ -52,8 +52,8 @@ contract("Vesting", (accounts) => {
         const start = await proxyContract.start();
         console.log(`${num} proxy start: `, start.toString());
 
-        const cliff = await proxyContract.cliff();
-        console.log(`${num} proxy cliff: `, cliff.toString());
+        const interval = await proxyContract.interval();
+        console.log(`${num} proxy interval: `, interval.toString());
 
         const duration = await proxyContract.duration();
         console.log(`${num} proxy duration: `, duration.toString());

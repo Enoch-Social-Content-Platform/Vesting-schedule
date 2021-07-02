@@ -1,4 +1,4 @@
-const Vesting = artifacts.require("Vesting");
+const Vesting = artifacts.require("Vesting2");
 const Vesting_Factory = artifacts.require("Vesting_Factory");
 
 module.exports = async function (deployer, network, accounts) {

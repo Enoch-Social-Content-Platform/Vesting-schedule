@@ -17,12 +17,12 @@ contract Vesting2 is Initializable {
     uint256 lastInterval = 0;
     uint256 totalIntervals;
     
-    event TokenReleased(uint256 amount);
+    event TokenReleased(uint256 currentInterval, uint256 totalIntervals,uint256 lastInterval,uint256 currentBalance, uint256 amount);
 
     function initialize(address beneficiary, uint256 start, uint256 intervalPeriod, uint256 duration, bool revocable) public initializer {
         require(beneficiary != address(0), "TokenVesting: beneficiary is the zero address");
         
-        require(interval <= duration, "TokenVesting: interval is longer than duration");
+        require(intervalPeriod <= duration, "TokenVesting: interval is longer than duration");
         require(duration > 0, "TokenVesting: duration is 0");
         
         require(start.add(duration) > block.timestamp, "TokenVesting: final time is before current time");
@@ -63,11 +63,17 @@ contract Vesting2 is Initializable {
 
         require(diff >= 1, "Tokens are not due yet");
 
+        uint256 releasableAmount;
         uint256 currentBalance = token.balanceOf(address(this));
-        uint256 releasableAmount = (diff/(totalIntervals - lastInterval))*currentBalance;
+        
+        if(currentInterval > totalIntervals){
+            releasableAmount = currentBalance;
+        } else {
+            releasableAmount = (diff*currentBalance)/(totalIntervals - lastInterval);
+        }
 
         token.transfer(beneficiary(), releasableAmount);
-        emit TokenReleased(releasableAmount);
+        emit TokenReleased(currentInterval, totalIntervals, lastInterval, currentBalance, releasableAmount);
         
         lastInterval = currentInterval;
     }
