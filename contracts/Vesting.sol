@@ -99,10 +99,6 @@ contract Vesting is Initializable {
         return _vestedAmount(token).sub(_released[address(token)]);
     }
 
-    function msgSender() public view returns (address) {
-        return msg.sender;
-    }
-
     function _vestedAmount(IERC20 token) private view returns (uint256) {
         uint256 currentBalance = token.balanceOf(address(this));
         uint256 totalBalance = currentBalance.add(_released[address(token)]);
