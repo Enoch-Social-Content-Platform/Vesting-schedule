@@ -8,7 +8,7 @@ import './Initializable.sol';
 
 contract Vesting is Initializable {
     using SafeMath for uint256;
-    using SafeERC20 for IERC20;
+    // using SafeERC20 for IERC20;
 
     event TokensReleased(address token, uint256 amount);
     event TokenVestingRevoked(address token);
@@ -78,7 +78,7 @@ contract Vesting is Initializable {
 
         _revoked[address(token)] = true;
 
-        token.safeTransfer(beneficiary(), refund);
+        token.transfer(beneficiary(), refund);
 
         emit TokenVestingRevoked(address(token));
     }
@@ -90,7 +90,7 @@ contract Vesting is Initializable {
 
         _released[address(token)] = _released[address(token)].add(unreleased);
 
-        token.safeTransfer(_beneficiary, unreleased);
+        token.transfer( _beneficiary, unreleased);
 
         emit TokensReleased(address(token), unreleased);
     }

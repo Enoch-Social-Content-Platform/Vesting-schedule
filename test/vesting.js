@@ -25,7 +25,7 @@ contract("Vesting", (accounts) => {
         const start = Math.ceil(Date.now()/1000);
 
         encodedData1 = encodeInitializeData(accounts[1], start, 1*1*10*60, start + 1*1*30*60);
-        encodedData2 = encodeInitializeData(accounts[2], start, 1*24*60*60, start + 3*24*60*60);
+        encodedData2 = encodeInitializeData(accounts[2], start, 1*1*20*60, start + 1*1*60*60);
 
         tx1 = await vestingFactoryInstance.newVesting(encodedData1);
         tx2 = await vestingFactoryInstance.newVesting(encodedData2);
