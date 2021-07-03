@@ -3,12 +3,13 @@ pragma solidity ^0.5.3;
 import './SafeMath.sol';
 import './Initializable.sol';
 import './IERC20.sol';
+import './SafeERC20.sol';
 
 contract Vesting2 is Initializable {
     using SafeMath for uint256;
+    using SafeERC20 for IERC20;
 
     address private _beneficiary;
-    // uint256 private _interval = 0;
     uint256 private _intervalPeriod;
     uint256 private _start;
     uint256 private _duration;
@@ -17,7 +18,7 @@ contract Vesting2 is Initializable {
     uint256 lastInterval = 0;
     uint256 totalIntervals;
     
-    event TokenReleased(uint256 currentInterval, uint256 totalIntervals,uint256 lastInterval,uint256 currentBalance, uint256 amount);
+    event TokenReleased(uint256 amount);
 
     function initialize(address beneficiary, uint256 start, uint256 intervalPeriod, uint256 duration, bool revocable) public initializer {
         require(beneficiary != address(0), "TokenVesting: beneficiary is the zero address");
@@ -27,14 +28,14 @@ contract Vesting2 is Initializable {
         
         require(start.add(duration) > block.timestamp, "TokenVesting: final time is before current time");
 
-        require(duration % intervalPeriod == 0, "total duration is not evenly divisible by interval period");
+        require(duration.mod(intervalPeriod) == 0, "total duration is not evenly divisible by interval period");
 
         _beneficiary = beneficiary;
         _revocable = revocable;
         _duration = duration;
         _intervalPeriod = intervalPeriod;
         _start = start;
-        totalIntervals = duration/intervalPeriod;
+        totalIntervals = duration.div(intervalPeriod);
     }
 
     function beneficiary() public view returns (address) {
@@ -60,8 +61,8 @@ contract Vesting2 is Initializable {
     function release(IERC20 token) public {
         require(_revocable, "Contract is not revocable");
 
-        uint256 currentInterval = (block.timestamp - _start)/_intervalPeriod;
-        uint256 diff = currentInterval - lastInterval;
+        uint256 currentInterval = (block.timestamp.sub(_start)).div(_intervalPeriod);
+        uint256 diff = currentInterval.sub(lastInterval);
 
         require(diff >= 1, "Tokens are not due yet");
 
@@ -72,11 +73,12 @@ contract Vesting2 is Initializable {
             releasableAmount = currentBalance;
             _revocable = false;
         } else {
-            releasableAmount = (diff*currentBalance)/(totalIntervals - lastInterval);
+            uint256 denominator = totalIntervals.sub(lastInterval);
+            releasableAmount = (diff.mul(currentBalance)).div(denominator);
         }
 
-        token.transfer(beneficiary(), releasableAmount);
-        emit TokenReleased(currentInterval, totalIntervals, lastInterval, currentBalance, releasableAmount);
+        token.safeTransfer(beneficiary(), releasableAmount);
+        emit TokenReleased(releasableAmount);
         
         lastInterval = currentInterval;
     }
