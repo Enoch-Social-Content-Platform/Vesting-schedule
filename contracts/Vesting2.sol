@@ -58,6 +58,8 @@ contract Vesting2 is Initializable {
     }
 
     function release(IERC20 token) public {
+        require(_revocable, "Contract is not revocable");
+
         uint256 currentInterval = (block.timestamp - _start)/_intervalPeriod;
         uint256 diff = currentInterval - lastInterval;
 
@@ -66,8 +68,9 @@ contract Vesting2 is Initializable {
         uint256 releasableAmount;
         uint256 currentBalance = token.balanceOf(address(this));
         
-        if(currentInterval > totalIntervals){
+        if(currentInterval >= totalIntervals){
             releasableAmount = currentBalance;
+            _revocable = false;
         } else {
             releasableAmount = (diff*currentBalance)/(totalIntervals - lastInterval);
         }
