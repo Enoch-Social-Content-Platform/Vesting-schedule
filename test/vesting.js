@@ -24,7 +24,7 @@ contract("Vesting", (accounts) => {
         let vestingFactoryInstance = await Vesting_Factory.deployed();
         const start = Math.ceil(Date.now()/1000);
 
-        encodedData1 = encodeInitializeData(accounts[1], start, 1*1*2*60, 1*1*3*60);
+        encodedData1 = encodeInitializeData(accounts[1], start, 1*1*1*60, 1*1*3*60);
         encodedData2 = encodeInitializeData(accounts[2], start, 1*1*2*60, 1*1*6*60);
 
         tx1 = await vestingFactoryInstance.newVesting(encodedData1);
@@ -74,7 +74,7 @@ contract("Vesting", (accounts) => {
                 name: 'start'
             },{
                 type: 'uint256',
-                name: 'cliffDuration'
+                name: 'intervalPeriod'
             },{
                 type: 'uint256',
                 name: 'duration'

@@ -2,7 +2,6 @@ pragma solidity ^0.5.3;
 
 import './SafeMath.sol';
 import './Initializable.sol';
-import './IERC20.sol';
 import './SafeERC20.sol';
 
 contract Vesting2 is Initializable {
@@ -68,7 +67,9 @@ contract Vesting2 is Initializable {
 
         uint256 releasableAmount;
         uint256 currentBalance = token.balanceOf(address(this));
-        
+
+        require(currentBalance > 0, "The balance of provided token address in this contract is 0");
+
         if(currentInterval >= totalIntervals){
             releasableAmount = currentBalance;
             _revocable = false;
